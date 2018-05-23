@@ -15,6 +15,7 @@
 #define RESERVATIONSTATION_H
 #include "OperationsEnum.h"
 #include "TagsReprise.h"
+#include "ROBnames.h"
 
 
 #include <iostream>
@@ -32,8 +33,9 @@ public:
     float getVj ();
     float getVk ();
     int getAddress ();
-    TagsReprise getQj ();
-    TagsReprise getQk ();
+    ROBNames getQj ();
+    ROBNames getQk ();
+    ROBNames getDestiny();
     TagsReprise getName ();
     OperationsEnum getOperation ();
     OperationsEnum getType ();
@@ -48,8 +50,9 @@ public:
     void setVk (float value);
     void setBusy (bool value);
     void setReady (bool value);
-    void setQj (TagsReprise tagQj);
-    void setQk (TagsReprise tagQk);
+    void setQj (ROBNames tagQj);
+    void setQk (ROBNames tagQk);
+    void setDestiny (ROBNames dest);
     void setOperation (OperationsEnum op);
     void setAddress (int addr);
     void setLatency (int lat);
@@ -63,8 +66,9 @@ public:
 
 private:
         OperationsEnum operation;
-        TagsReprise    qj;
-        TagsReprise    qk;
+        ROBNames    qj;
+        ROBNames    qk;
+        ROBNames destiny;
         float   vj;
         float   vk;
         bool    busy;

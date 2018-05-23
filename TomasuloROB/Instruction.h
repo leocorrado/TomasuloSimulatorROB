@@ -38,10 +38,12 @@ public:
     int getExecuteClockBegin ();
     int getExecuteClockEnd ();
     int getWriteBackClock ();
+    int getCommitClock();
     void setIssueClock (int clk);
     void setExecuteClockBegin (int clk);
     void setExecuteClockEnd (int clk);
     void setWriteBackClock (int clk);
+    void setCommitClock (int clk);
     void toPrint();
 private:
     FPRegNames rd; //destino siempre es un FP
@@ -55,6 +57,7 @@ private:
     int executeClockBegin;
     int executeClockEnd;
     int writeBackClock;
+    int commitClock;
 
 };
 

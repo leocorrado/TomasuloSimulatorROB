@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/CommonDataBus.o \
 	${OBJECTDIR}/FPointRegister.o \
 	${OBJECTDIR}/Instruction.o \
+	${OBJECTDIR}/ROB.o \
 	${OBJECTDIR}/RRegisters.o \
 	${OBJECTDIR}/ReservationStation.o \
 	${OBJECTDIR}/main.o
@@ -81,6 +82,11 @@ ${OBJECTDIR}/Instruction.o: Instruction.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Instruction.o Instruction.cpp
+
+${OBJECTDIR}/ROB.o: ROB.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ROB.o ROB.cpp
 
 ${OBJECTDIR}/RRegisters.o: RRegisters.cpp
 	${MKDIR} -p ${OBJECTDIR}

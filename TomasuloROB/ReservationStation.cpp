@@ -15,8 +15,8 @@
 
 ReservationStation::ReservationStation() {
     operation = OperationsEnum::UNDEF;
-    qj = TagsReprise::NON;
-    qk = TagsReprise::NON;
+    qj = ROBNames::UNDEF;
+    qk = ROBNames::UNDEF;
     vj = 0.0;
     vk = 0.0;
     busy = false;
@@ -29,13 +29,14 @@ ReservationStation::ReservationStation() {
     indexToInstruction = 1000;
     result = 0.0;
     ready = false;
+    destiny = ROBNames::UNDEF;
 }
 
 ReservationStation::ReservationStation(TagsReprise nname, OperationsEnum typ)
 {
     operation = OperationsEnum::UNDEF;
-    qj = TagsReprise::NON;
-    qk = TagsReprise::NON;
+    qj = ROBNames::UNDEF;
+    qk = ROBNames::UNDEF;
     vj = 0.0;
     vk = 0.0;
     busy = false;
@@ -48,6 +49,7 @@ ReservationStation::ReservationStation(TagsReprise nname, OperationsEnum typ)
     indexToInstruction = 1000;
     result = 0.0;
     ready = false;
+    destiny = ROBNames::UNDEF;
 }
 
 
@@ -81,14 +83,19 @@ bool ReservationStation::isReady()
     return ready;
 }
 
-TagsReprise ReservationStation::getQj() 
+ROBNames ReservationStation::getQj() 
 {
     return qj;
 }
 
-TagsReprise ReservationStation::getQk ()
+ROBNames ReservationStation::getQk ()
 {
     return qk;
+}
+
+ROBNames ReservationStation::getDestiny()
+{
+    return destiny;
 }
 
 OperationsEnum ReservationStation::getOperation()
@@ -144,14 +151,19 @@ void ReservationStation::setReady (bool value)
     ready = value;
 }
 
-void ReservationStation::setQj(TagsReprise tagQj)
+void ReservationStation::setQj(ROBNames tagQj)
 {
     this->qj = tagQj;
 }
 
-void ReservationStation::setQk (TagsReprise tagQk)
+void ReservationStation::setQk (ROBNames tagQk)
 {
     this->qk = tagQk;
+}
+
+void ReservationStation::setDestiny(ROBNames dest)
+{
+    this->destiny = dest;
 }
 
 void ReservationStation::setVj(float value)
@@ -231,8 +243,9 @@ void ReservationStation::flush ()
 {
     busy = false;
     ready = false;
-    qk = TagsReprise::NON;
-    qj = TagsReprise::NON;
+    qk = ROBNames::UNDEF;
+    qj = ROBNames::UNDEF;
+    destiny = ROBNames::UNDEF;
     vj = 0;
     vk = 0;
     address = 0;
@@ -253,7 +266,8 @@ void ReservationStation::toPrint()
             <<std::setfill(separator)<< vj << "  Vk: " <<
             std::setprecision(5)<< std::setw(width)<<std::setfill(separator)
             << vk << "  Qj: " <<std::setw(5)<<std::setfill(separator)<< qj <<
-            "  Qk: " << std::setw(5) << std::setfill(separator) << qk << "\n";
+            "  Qk: " << std::setw(5) << std::setfill(separator) << qk << 
+            "  Destiny: "<< std::setw(5) << std::setfill(separator) << destiny << "\n";
     }
     else
     {
@@ -261,7 +275,8 @@ void ReservationStation::toPrint()
                   << name << "  Busy: " << busy <<"  op: "<<  
                   std::setw(9)<<std::setfill(separator)<< operation 
                 << "  Vj: " << std::setw(5) << 
-            vj << " Address: " << address << " \n";
+            vj << " Address: " << address << "  Destiny: "<< std::setw(5) 
+                << std::setfill(separator) << destiny << "\n";
     }
 }
 

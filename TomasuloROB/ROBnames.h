@@ -25,16 +25,16 @@ inline std::ostream& operator<<(std::ostream& os, ROBNames obj)
         case ROBNames::ROB0:
             os << "ROB0";
             break;
-        case ROBNames::ROB0:
+        case ROBNames::ROB1:
             os << "ROB1";
             break;
-        case ROBNames::ROB0:
+        case ROBNames::ROB2:
             os << "ROB2";
             break;
-        case ROBNames::ROB0:
+        case ROBNames::ROB3:
             os << "ROB3";
             break;
-        case ROBNames::ROB0:
+        case ROBNames::ROB4:
             os << "ROB4";
             break;
         case ROBNames::ROB5 :

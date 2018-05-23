@@ -25,6 +25,7 @@ Instruction::Instruction() {
     executeClockBegin = 0;
     executeClockEnd = 0;
     writeBackClock = 0;
+    commitClock = 0;
 }
 
 Instruction::Instruction(FPRegNames RD, int RS, RRegistersNames RT,
@@ -39,6 +40,7 @@ Instruction::Instruction(FPRegNames RD, int RS, RRegistersNames RT,
     executeClockBegin = 0;
     executeClockEnd = 0;
     writeBackClock = 0;
+    commitClock = 0;
 }
 
 Instruction::Instruction (FPRegNames RD, FPRegNames RS, FPRegNames RT,
@@ -54,6 +56,8 @@ Instruction::Instruction (FPRegNames RD, FPRegNames RS, FPRegNames RT,
     executeClockBegin = 0;
     executeClockEnd = 0;
     writeBackClock = 0;
+    commitClock = 0;
+
 }
 
 Instruction::~Instruction() {
@@ -110,6 +114,13 @@ int Instruction::getWriteBackClock()
     return writeBackClock;
 }
 
+
+int Instruction::getCommitClock()
+{
+    return commitClock;
+}
+
+
 void Instruction::setExecuteClockBegin(int clk)
 {
     executeClockBegin = clk;
@@ -129,6 +140,12 @@ void Instruction::setWriteBackClock(int clk)
 {
     writeBackClock = clk;
 }
+
+void Instruction::setCommitClock (int clk)
+{
+    commitClock = clk;
+}
+
 
 void Instruction::toPrint ()
 {

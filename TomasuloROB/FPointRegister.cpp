@@ -16,7 +16,7 @@
 FPointRegister::FPointRegister() 
 {
     value = 10;
-    tag = TagsReprise::NON;
+    tag = ROBNames::UNDEF;
     busy = false;
     name = FPRegNames::NON;
 }
@@ -24,7 +24,7 @@ FPointRegister::FPointRegister()
 FPointRegister::FPointRegister (float val, FPRegNames nam)
 {
     value = val;
-    tag = TagsReprise::NON;
+    tag = ROBNames::UNDEF;
     busy = false;
     name = nam;
 }
@@ -32,7 +32,7 @@ FPointRegister::FPointRegister (float val, FPRegNames nam)
 FPointRegister::FPointRegister(FPRegNames nam)
 {
     value = 10;
-    tag = TagsReprise::NON;
+    tag = ROBNames::UNDEF;
     busy = false;
     name = nam;
 }

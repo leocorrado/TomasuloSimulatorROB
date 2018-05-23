@@ -9,6 +9,7 @@
       <itemPath>FPointRegister.h</itemPath>
       <itemPath>Instruction.h</itemPath>
       <itemPath>OperationsEnum.h</itemPath>
+      <itemPath>ROB.h</itemPath>
       <itemPath>ROBnames.h</itemPath>
       <itemPath>RRegisters.h</itemPath>
       <itemPath>RRegistersNames.h</itemPath>
@@ -25,6 +26,7 @@
       <itemPath>CommonDataBus.cpp</itemPath>
       <itemPath>FPointRegister.cpp</itemPath>
       <itemPath>Instruction.cpp</itemPath>
+      <itemPath>ROB.cpp</itemPath>
       <itemPath>RRegisters.cpp</itemPath>
       <itemPath>ReservationStation.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -69,6 +71,10 @@
       <item path="Instruction.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OperationsEnum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ROB.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ROB.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ROBnames.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -123,6 +129,10 @@
       <item path="Instruction.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="OperationsEnum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ROB.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ROB.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ROBnames.h" ex="false" tool="3" flavor2="0">
       </item>
