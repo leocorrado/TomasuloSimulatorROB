@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>CommonDataBus.h</itemPath>
+      <itemPath>FPRegNames.h</itemPath>
+      <itemPath>FPointRegister.h</itemPath>
+      <itemPath>Instruction.h</itemPath>
+      <itemPath>OperationsEnum.h</itemPath>
+      <itemPath>ROBnames.h</itemPath>
+      <itemPath>RRegisters.h</itemPath>
+      <itemPath>RRegistersNames.h</itemPath>
+      <itemPath>ReservationStation.h</itemPath>
+      <itemPath>TagsReprise.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>CommonDataBus.cpp</itemPath>
+      <itemPath>FPointRegister.cpp</itemPath>
+      <itemPath>Instruction.cpp</itemPath>
+      <itemPath>RRegisters.cpp</itemPath>
+      <itemPath>ReservationStation.cpp</itemPath>
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <standard>8</standard>
+        </ccTool>
+      </compileType>
+      <item path="CommonDataBus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="CommonDataBus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="FPRegNames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="FPointRegister.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="FPointRegister.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Instruction.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Instruction.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OperationsEnum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ROBnames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RRegisters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RRegisters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RRegistersNames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ReservationStation.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ReservationStation.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TagsReprise.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <standard>8</standard>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="CommonDataBus.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="CommonDataBus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="FPRegNames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="FPointRegister.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="FPointRegister.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Instruction.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Instruction.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="OperationsEnum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ROBnames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RRegisters.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="RRegisters.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="RRegistersNames.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ReservationStation.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ReservationStation.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="TagsReprise.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
