@@ -73,17 +73,28 @@ using namespace std;
 int issue (vector<Instruction>& instr,
           vector<ReservationStation>& reserStations,
           vector<FPointRegister>& fPRegs,
-          vector<RRegisters>& rRegs);
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff);
 
 int execute (vector<Instruction>& instr,
           vector<ReservationStation>& reserStations,
           vector<FPointRegister>& fPRegs,
-          vector<RRegisters>& rRegs);
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff);
 
 int writeBack (vector<Instruction>& instr,
           vector<ReservationStation>& reserStations,
           vector<FPointRegister>& fPRegs,
-          vector<RRegisters>& rRegs);
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff,
+          CommonDataBus &cDB);
+
+int commit (vector<Instruction>& instr,
+          vector<ReservationStation>& reserStations,
+          vector<FPointRegister>& fPRegs,
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff);
+
 
 
 
@@ -181,8 +192,8 @@ int main(int argc, char** argv)
     ROB RoB4 = ROB (ROBNames::ROB4);
     ROB RoB5 = ROB (ROBNames::ROB5);
     
-    vector<ROB> ReorderBuffer = {RoB0, RoB1, RoB2, RoB3, RoB4, RoB5 };
-    printROB (ReorderBuffer);
+    vector<ROB> reorderBuffer = {RoB0, RoB1, RoB2, RoB3, RoB4, RoB5 };
+    printROB (reorderBuffer);
     //
     //#######################################################################
     
@@ -196,24 +207,30 @@ int main(int argc, char** argv)
     cout << "Comienzo de la simulacion: "<<endl;
     cout<< "-------------------------------------------------"<<endl<<endl;
    
-    /*
+    
     do
     {   
        GLOBAL_CLOCK++;
-       issue (instructionsVector, functionalUnits,fPointRegisters,rRegisters);
-       execute (instructionsVector, functionalUnits,fPointRegisters,rRegisters);
-       writeBack (instructionsVector, functionalUnits,fPointRegisters,rRegisters);
+       issue (instructionsVector, functionalUnits,fPointRegisters,
+              rRegisters, reorderBuffer);
+       execute (instructionsVector, functionalUnits,fPointRegisters,
+              rRegisters, reorderBuffer);
+       writeBack (instructionsVector, functionalUnits,fPointRegisters,
+              rRegisters, reorderBuffer, commonDataBus);
        
-       
+       printTimingTable (instructionsVector);
+       printROB (reorderBuffer);
        printFPRegisters (fPointRegisters);
        printFunctionalUnits (functionalUnits);
-       printTimingTable (instructionsVector);
        
-       if (totalInstFinished == instructionsVector.size () )
-           finish = true;
-       cout << endl;
+       
+       //if (totalInstFinished == instructionsVector.size () )
+       //    finish = true;
+       cout << "----------------------------------------------------"<<endl;
+       cout << endl << endl;
+       
     }while (!finish);
-    */
+    
     return 0;
 }
 
@@ -221,9 +238,336 @@ int main(int argc, char** argv)
 int issue (vector<Instruction>& instr,
           vector<ReservationStation>& reserStations,
           vector<FPointRegister>& fPRegs,
-          vector<RRegisters>& rRegs)
+          vector<RRegisters>& rRegs,
+          vector<ROB> &reorderBuffer)
 {
+    bool banderaIssue = false;
+    int indexToROB = 0;
+    int indexToReser = 0;
     
+    
+    //IMPORTANTE SACAR LA BANDERA FINISH
+    //Ya se hizo issue de todas las instrucciones del vector 
+    if (instructionsIssued >= instr.size ()) 
+    {
+        finish = true;
+        return 0;
+
+    }
+
+    
+    OperationsEnum operando = instr [instructionsIssued].getOpCode();
+    if (operando == OperationsEnum::MUL || operando == OperationsEnum::DIV)
+    {
+        for (int i = 0; i < reserStations.size (); i++)
+        {
+            for (int j = 0; j < reorderBuffer.size(); j++)
+            {
+                if (reserStations[i].getType() == OperationsEnum::MUL &&
+                    !reserStations[i].isBusy() && !reorderBuffer[j].isBusy())
+                {
+                    banderaIssue = true;
+                    indexToROB = j;
+                    indexToReser = i;
+                    instructionsIssued++;
+                    reserStations [i].setOperation(operando);
+                    break;
+                }
+            }
+            if (banderaIssue)
+                break;
+        }
+    }
+    else if (operando == OperationsEnum::ADD || operando == OperationsEnum::SUB)
+    {
+       for (int i = 0; i < reserStations.size(); i++) 
+       {
+            for (int j = 0; j < reorderBuffer.size(); j++) 
+            {
+                if (reserStations[i].getType() == OperationsEnum::ADD &&
+                        !reserStations[i].isBusy() && !reorderBuffer[j].isBusy()) 
+                {
+                    banderaIssue = true;
+                    indexToROB = j;
+                    indexToReser = i;
+                    instructionsIssued++;
+                    reserStations [i].setOperation(operando);
+                    break;
+                }
+            }
+            if (banderaIssue)
+                break;
+        } 
+    }
+    else
+    {
+      for (int i = 0; i < reserStations.size(); i++) 
+      {
+            for (int j = 0; j < reorderBuffer.size(); j++) 
+            {
+                if (reserStations[i].getType() == OperationsEnum::LOAD &&
+                        !reserStations[i].isBusy() && !reorderBuffer[j].isBusy()) 
+                {
+                    banderaIssue = true;
+                    indexToROB = j;
+                    indexToReser = i;
+                    instructionsIssued++;
+                    reserStations [i].setOperation(operando);
+                    break;
+                }
+            }
+            if (banderaIssue)
+                break;
+        }   
+    }
+    
+    //Ningun espacio en el reorder buffer ni en ninguna estacion de reserva
+    if (!banderaIssue)
+        return 1;
+    
+    
+    FPRegNames name_rd = instr [instructionsIssued - 1].getRd();
+    
+    if (operando != OperationsEnum::LOAD)
+    {
+        FPRegNames name_rs = instr [instructionsIssued - 1].getRsFp();
+        FPRegNames name_rt = instr [instructionsIssued - 1].getRtFp();
+        for (int i = 0; i < fPRegs.size(); i++)
+        {
+            if (name_rs == fPRegs[i].getName())
+            {
+                if (!fPRegs [i].isBusy())
+                {
+                    reserStations [indexToReser].setVj(fPRegs[i].getValue());
+                    reserStations [indexToReser].setQj(ROBNames::UNDEF);
+                }
+                else
+                {
+                    for (int j = 0; j < reorderBuffer.size(); j++)
+                    {
+                        if (reorderBuffer [j].getDestination() == name_rs)
+                        {
+                            if (reorderBuffer [j].isDone())
+                            {
+                                reserStations [indexToReser].setVj
+                                (reorderBuffer [j].getResult());
+                                reserStations [indexToReser].setQj(ROBNames::UNDEF);
+                            }
+                            else
+                            {
+                                reserStations [indexToReser].setQj(reorderBuffer [j].getName());
+                            }
+                        }
+                    }
+                }
+            }
+            if (name_rt == fPRegs [i].getName())
+            {
+                if (!fPRegs [i].isBusy()) 
+                {
+                    reserStations [indexToReser].setVk(fPRegs[i].getValue());
+                    reserStations [indexToReser].setQk(ROBNames::UNDEF);
+                } 
+                else 
+                {
+                    for (int j = 0; j < reorderBuffer.size(); j++) 
+                    {
+                        if (reorderBuffer [j].getDestination() == name_rt) 
+                        {
+                            if (reorderBuffer [j].isDone()) 
+                            {
+                                reserStations [indexToReser].setVk
+                                        (reorderBuffer [j].getResult());
+                                reserStations [indexToReser].setQk(ROBNames::UNDEF);
+                            } else 
+                            {
+                                reserStations [indexToReser].setQk(reorderBuffer [j].getName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        RRegistersNames offset_register = instr [instructionsIssued - 1].getRtR();
+        int immediate = instr [instructionsIssued - 1].getRsVal();
+        for (int i = 0; i < rRegs.size(); i++) 
+        {
+            if (offset_register == rRegs[i].getRegisterName()) {
+                reserStations [indexToReser].setVj(rRegs[i].getRegisterValue());
+                reserStations [indexToReser].setAddress(immediate);
+            }
+        }
+    }
+    reserStations [indexToReser].setIndexToInstruction(instructionsIssued - 1);
+    reserStations [indexToReser].setBusy(true);
+    reserStations [indexToReser].setIssueLatency(0);
+    reserStations [indexToReser].setDestiny(reorderBuffer[indexToROB].getName());
+    instr [instructionsIssued -1].setIssueClock(GLOBAL_CLOCK);
+    for (int i = 0; i < fPRegs.size (); i++)
+    {
+        if (name_rd == fPRegs [i].getName())
+        {
+            fPRegs [i].setBusy(true);
+            fPRegs [i].setTag(reorderBuffer[indexToROB].getName());
+        }
+    }
+    reorderBuffer [indexToROB].setDestination(name_rd);
+    reorderBuffer [indexToROB].setInstructionAssociated(instructionsIssued -1);
+    reorderBuffer [indexToROB].setDone(false);
+    reorderBuffer [indexToROB].setBusy(true);
+    
+    
+    return 2;
+}
+
+int execute (vector<Instruction>& instr,vector<ReservationStation>& reserStations,
+          vector<FPointRegister>& fPRegs, vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff)
+{
+    for (int i = 0; i < reserStations.size(); i++) 
+    {
+        if (reserStations [i].isBusy()) 
+        {
+            if (reserStations [i].getIssueLatency() >= ISSUE_LATENCY) 
+            {
+                if (reserStations [i].getQj() == ROBNames::UNDEF &&
+                        reserStations [i].getQk() == ROBNames::UNDEF)
+                {
+                    if (instr [reserStations[i].getIndexOfInstruction()].getExecuteClockBegin() == 0)
+                        instr [reserStations [i].getIndexOfInstruction()].setExecuteClockBegin(GLOBAL_CLOCK);
+
+                    //aumento en 1 la latencia
+                    reserStations [i].setLatency(reserStations [i].getLatency() + 1);
+                    switch (reserStations [i].getOperation()) 
+                    {
+                        case (OperationsEnum::ADD):
+                            if (reserStations [i].getLatency() == ADD_LATENCY) 
+                            {
+                                reserStations [i].calculateResult();
+                                instr [reserStations [i].getIndexOfInstruction()].
+                                        setExecuteClockEnd(GLOBAL_CLOCK);
+                            }
+                            break;
+                        case (OperationsEnum::SUB):
+                            if (reserStations [i].getLatency() == SUB_LATENCY) 
+                            {
+                                reserStations [i].calculateResult();
+                                instr [reserStations [i].getIndexOfInstruction()].
+                                        setExecuteClockEnd(GLOBAL_CLOCK);
+                            }
+                            break;
+                        case (OperationsEnum::MUL):
+                            if (reserStations [i].getLatency() == MULT_LATENCY) 
+                            {
+                                reserStations [i].calculateResult();
+                                instr [reserStations [i].getIndexOfInstruction()].
+                                        setExecuteClockEnd(GLOBAL_CLOCK);
+                            }
+                            break;
+                        case (OperationsEnum::DIV):
+                            if (reserStations [i].getLatency() == DIV_LATENCY) 
+                            {
+                                reserStations [i].calculateResult();
+                                instr [reserStations [i].getIndexOfInstruction()].
+                                        setExecuteClockEnd(GLOBAL_CLOCK);
+                            }
+                            break;
+                        case (OperationsEnum::LOAD):
+                            if (reserStations [i].getLatency() == LOAD_LATENCY) 
+                            {
+
+                                reserStations [i].executeLoad();
+                                instr [reserStations [i].getIndexOfInstruction()].
+                                        setExecuteClockEnd(GLOBAL_CLOCK);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } 
+            else 
+            {
+                reserStations [i].setIssueLatency(reserStations [i].
+                        getIssueLatency() + 1);
+            }
+        }
+    }
+
+}
+
+int writeBack (vector<Instruction>& instr,
+          vector<ReservationStation>& reserStations,
+          vector<FPointRegister>& fPRegs,
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff,
+          CommonDataBus &cDB)
+{
+    for (int i = 0; i < reserStations.size() ; i++)
+    {
+        //check if result is ready
+        if (reserStations [i].isReady() && cDB.isAvailable())
+        {
+            //and 1 cycle of WB of delay happen
+            if (reserStations [i].getWriteBackLatency() == WB_LATENCY )
+            {
+                if (instr [reserStations [i].getIndexOfInstruction()].getWriteBackClock() == 0)
+                    instr [reserStations [i].getIndexOfInstruction()].setWriteBackClock(GLOBAL_CLOCK);
+                
+                cDB.setResult(reserStations [i].getResult());
+                cDB.setAvailable(false);
+                cDB.setDestiny(reserStations[i].getDestiny());
+                
+                //Grabar en el ROB Correspondiente el resultado
+                //obtenido en la estacion de reserva asociada.
+                for (int x = 0; x < rBuff.size(); x++)
+                {
+                    if (rBuff [i].getName() == cDB.getDestiny())
+                    {
+                        rBuff [i].setResult(cDB.getResult());
+                        rBuff [i].setDone(true);
+                    }
+                }
+                
+                for (int x = 0; x < reserStations.size(); x++)
+                {
+                    if (reserStations [x].getQj() == cDB.getDestiny())
+                    {
+                        reserStations [x].setVj(cDB.getResult());
+                        reserStations [x].setQj(ROBNames::UNDEF);
+                    }
+                    if (reserStations [x].getQk () == cDB.getDestiny())
+                    {
+                        reserStations [x].setVk (cDB.getResult());
+                        reserStations [x].setQk (ROBNames::UNDEF);
+                    }
+                }
+                //resetear la estacion  de reserva asi se libera
+                reserStations [i].flush();
+                totalInstFinished++;
+                
+            }
+            else
+            {
+                reserStations [i].setWriteBackLatency(reserStations [i].getWriteBackLatency() + 1);
+            }
+        }
+    }
+    //liberamos el CDB AQUI ASI SE UTILIZA SOLO UNA VEZ
+    cDB.setAvailable(true);
+    cDB.setResult(0);
+    cDB.setDestiny(ROBNames::UNDEF);
+}
+
+int commit (vector<Instruction>& instr,
+          vector<ReservationStation>& reserStations,
+          vector<FPointRegister>& fPRegs,
+          vector<RRegisters>& rRegs,
+          vector<ROB> &rBuff)
+{
     
 }
 

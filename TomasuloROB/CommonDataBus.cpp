@@ -14,7 +14,7 @@
 #include "CommonDataBus.h"
 
 CommonDataBus::CommonDataBus() {
-    name = TagsReprise::NON;
+    destiny = ROBNames::UNDEF;
     available = true;
     result = 0.0;
 }
@@ -33,9 +33,9 @@ void CommonDataBus::setAvailable(bool avail)
     available = avail;
 }
 
-void CommonDataBus::setName (TagsReprise nam)
+void CommonDataBus::setDestiny (ROBNames dest)
 {
-    name = nam;
+    destiny = dest;
 }
 
 void CommonDataBus::setResult(float res)
@@ -48,7 +48,7 @@ float CommonDataBus::getResult()
     return result;
 }
 
-TagsReprise CommonDataBus::getName()
+ROBNames CommonDataBus::getDestiny()
 {
-    return name;
+    return destiny;
 }

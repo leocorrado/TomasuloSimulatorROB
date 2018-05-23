@@ -41,7 +41,7 @@ inline std::ostream& operator<<(std::ostream& os, ROBNames obj)
             os << "ROB5";
             break;
         case ROBNames::UNDEF:
-            os << "UNDEFINED";
+            os << "NON";
             break;
         default: os.setstate(std::ios_base::failbit);
     }

@@ -13,7 +13,8 @@
 
 #ifndef COMMONDATABUS_H
 #define COMMONDATABUS_H
-#include "TagsReprise.h"
+#include "ROBnames.h"
+
 
 class CommonDataBus {
 public:
@@ -21,14 +22,14 @@ public:
     virtual ~CommonDataBus();
     bool isAvailable();
     void setAvailable(bool avail);
-    void setName (TagsReprise nam);
+    void setDestiny (ROBNames dest);
     void setResult(float res);
     float getResult();
-    TagsReprise getName();
+    ROBNames getDestiny();
 private:
     float result;
     bool available;
-    TagsReprise name;
+    ROBNames destiny;
 
 };
 
