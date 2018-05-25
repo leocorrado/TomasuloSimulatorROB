@@ -246,6 +246,7 @@ void ReservationStation::flush ()
     qk = ROBNames::UNDEF;
     qj = ROBNames::UNDEF;
     destiny = ROBNames::UNDEF;
+    operation = OperationsEnum::UNDEF;
     vj = 0;
     vk = 0;
     address = 0;
