@@ -53,6 +53,8 @@ int GLOBAL_CLOCK = 0;
 int instructionsIssued = 0;
 int totalInstFinished = 0;
 bool finish = false;
+int pointerHead = 0;
+int pointerIssued = 0;
 //
 //############################################
 
@@ -207,7 +209,6 @@ int main(int argc, char** argv)
     cout << "Comienzo de la simulacion: "<<endl;
     cout<< "-------------------------------------------------"<<endl<<endl;
    
-    
     do
     {   
        GLOBAL_CLOCK++;
@@ -217,15 +218,18 @@ int main(int argc, char** argv)
               rRegisters, reorderBuffer);
        writeBack (instructionsVector, functionalUnits,fPointRegisters,
               rRegisters, reorderBuffer, commonDataBus);
+       commit (instructionsVector, functionalUnits, fPointRegisters,
+               rRegisters, reorderBuffer);
        
        printTimingTable (instructionsVector);
        printROB (reorderBuffer);
        printFPRegisters (fPointRegisters);
        printFunctionalUnits (functionalUnits);
+       cout<< "Variables globales: "<<endl;
+       cout<<"Pointer Head: "<< pointerHead << " Pointer Issued: "<< pointerIssued << endl;
        
-       
-       //if (totalInstFinished == instructionsVector.size () )
-       //    finish = true;
+       if (totalInstFinished == instructionsVector.size () )
+           finish = true;
        cout << "----------------------------------------------------"<<endl;
        cout << endl << endl;
        
@@ -249,79 +253,64 @@ int issue (vector<Instruction>& instr,
     //IMPORTANTE SACAR LA BANDERA FINISH
     //Ya se hizo issue de todas las instrucciones del vector 
     if (instructionsIssued >= instr.size ()) 
-    {
-        finish = true;
         return 0;
 
-    }
 
     
     OperationsEnum operando = instr [instructionsIssued].getOpCode();
+    
     if (operando == OperationsEnum::MUL || operando == OperationsEnum::DIV)
     {
-        for (int i = 0; i < reserStations.size (); i++)
+        for (int i = 0; i < reserStations.size(); i++)
         {
-            for (int j = 0; j < reorderBuffer.size(); j++)
+            if (reserStations [i].getType() == OperationsEnum::MUL &&
+                !reserStations [i].isBusy() && !reorderBuffer[pointerIssued].isBusy())
             {
-                if (reserStations[i].getType() == OperationsEnum::MUL &&
-                    !reserStations[i].isBusy() && !reorderBuffer[j].isBusy())
-                {
-                    banderaIssue = true;
-                    indexToROB = j;
-                    indexToReser = i;
-                    instructionsIssued++;
-                    reserStations [i].setOperation(operando);
-                    break;
-                }
-            }
-            if (banderaIssue)
+                banderaIssue = true;
+                indexToReser = i;
+                indexToROB = pointerIssued;
+                reserStations [i].setOperation(operando);
+                pointerIssued = (pointerIssued + 1) % reorderBuffer.size();
+                instructionsIssued++;
                 break;
+            }
         }
     }
     else if (operando == OperationsEnum::ADD || operando == OperationsEnum::SUB)
     {
-       for (int i = 0; i < reserStations.size(); i++) 
-       {
-            for (int j = 0; j < reorderBuffer.size(); j++) 
+        for (int i = 0; i < reserStations.size (); i++)
+        {
+            if (reserStations [i].getType() == OperationsEnum::ADD &&
+                !reserStations [i].isBusy() && !reorderBuffer [pointerIssued].isBusy())
             {
-                if (reserStations[i].getType() == OperationsEnum::ADD &&
-                        !reserStations[i].isBusy() && !reorderBuffer[j].isBusy()) 
-                {
-                    banderaIssue = true;
-                    indexToROB = j;
-                    indexToReser = i;
-                    instructionsIssued++;
-                    reserStations [i].setOperation(operando);
-                    break;
-                }
-            }
-            if (banderaIssue)
+                banderaIssue = true;
+                indexToReser = i;
+                indexToROB = pointerIssued;
+                reserStations [i].setOperation(operando);
+                pointerIssued = (pointerIssued + 1) % reorderBuffer.size();
+                instructionsIssued++;
                 break;
-        } 
+            }
+        }
     }
     else
     {
-      for (int i = 0; i < reserStations.size(); i++) 
-      {
-            for (int j = 0; j < reorderBuffer.size(); j++) 
+        for (int i = 0; i < reserStations.size (); i++)
+        {
+            if (reserStations[i].getType() == OperationsEnum::LOAD &&
+                !reserStations[i].isBusy() && !reorderBuffer[pointerIssued].isBusy())
             {
-                if (reserStations[i].getType() == OperationsEnum::LOAD &&
-                        !reserStations[i].isBusy() && !reorderBuffer[j].isBusy()) 
-                {
-                    banderaIssue = true;
-                    indexToROB = j;
-                    indexToReser = i;
-                    instructionsIssued++;
-                    reserStations [i].setOperation(operando);
-                    break;
-                }
-            }
-            if (banderaIssue)
+                 banderaIssue = true;
+                indexToReser = i;
+                indexToROB = pointerIssued;
+                reserStations [i].setOperation(operando);
+                pointerIssued = (pointerIssued + 1) % reorderBuffer.size();
+                instructionsIssued++;
                 break;
-        }   
+            }
+        }
     }
-    
-    //Ningun espacio en el reorder buffer ni en ninguna estacion de reserva
+     
     if (!banderaIssue)
         return 1;
     
@@ -509,10 +498,11 @@ int writeBack (vector<Instruction>& instr,
     for (int i = 0; i < reserStations.size() ; i++)
     {
         //check if result is ready
-        if (reserStations [i].isReady() && cDB.isAvailable())
+        if (reserStations [i].isReady())
         {
             //and 1 cycle of WB of delay happen
-            if (reserStations [i].getWriteBackLatency() == WB_LATENCY )
+            if (reserStations [i].getWriteBackLatency() >= WB_LATENCY 
+                && cDB.isAvailable())
             {
                 if (instr [reserStations [i].getIndexOfInstruction()].getWriteBackClock() == 0)
                     instr [reserStations [i].getIndexOfInstruction()].setWriteBackClock(GLOBAL_CLOCK);
@@ -525,10 +515,10 @@ int writeBack (vector<Instruction>& instr,
                 //obtenido en la estacion de reserva asociada.
                 for (int x = 0; x < rBuff.size(); x++)
                 {
-                    if (rBuff [i].getName() == cDB.getDestiny())
+                    if (rBuff [x].getName() == cDB.getDestiny())
                     {
-                        rBuff [i].setResult(cDB.getResult());
-                        rBuff [i].setDone(true);
+                        rBuff [x].setResult(cDB.getResult());
+                        rBuff [x].setDone(true);
                     }
                 }
                 
@@ -547,7 +537,7 @@ int writeBack (vector<Instruction>& instr,
                 }
                 //resetear la estacion  de reserva asi se libera
                 reserStations [i].flush();
-                totalInstFinished++;
+               // totalInstFinished++;
                 
             }
             else
@@ -568,7 +558,40 @@ int commit (vector<Instruction>& instr,
           vector<RRegisters>& rRegs,
           vector<ROB> &rBuff)
 {
-    
+    for (int i = 0; i < rBuff.size(); i++)
+    {
+        if (rBuff [i].isDone())
+        {
+            if (rBuff [i].getCommitLatency() >= COMMIT_LATENCY && i == pointerHead )
+            {
+                if (instr [rBuff [i].getInstructionAssociated()].getCommitClock() == 0)
+                    instr [rBuff [i].getInstructionAssociated()].setCommitClock(GLOBAL_CLOCK);
+                
+                FPRegNames aux = rBuff [i].getDestination();
+                for (int j = 0; j < fPRegs.size (); j++)
+                {
+                    if (fPRegs [j].getName() == aux)
+                    {
+                        fPRegs [j].setBusy(false);
+                        fPRegs [j].setValue(rBuff [i].getResult());
+                        fPRegs [j].setTag(ROBNames::UNDEF);
+                    }
+                }
+                rBuff [i].setBusy(false);
+                rBuff [i].setDone(false);
+                rBuff [i].setCommitLatency(0);
+                rBuff [i].setResult(0);
+                rBuff [i].setDestination(FPRegNames::NON);
+                totalInstFinished++;
+                pointerHead = (pointerHead + 1) % rBuff.size();
+                break; //para que no se comiteen varias en el mismo ciclo
+            }
+            else
+            {
+                rBuff [i].setCommitLatency(rBuff [i].getCommitLatency() + 1);
+            }
+        }
+    }
 }
 
 
