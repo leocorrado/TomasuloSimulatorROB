@@ -21,7 +21,7 @@ ROB::ROB()
     busy = false;
     instructionAssociated = -1;
     name = ROBNames::UNDEF;
-    
+    commitLatency = 0;
 }
 
 ROB::ROB (ROBNames nam)
@@ -32,6 +32,7 @@ ROB::ROB (ROBNames nam)
     busy = false;
     instructionAssociated = -1;
     name = nam;
+    commitLatency = 0;
 }
 
 
@@ -70,6 +71,12 @@ ROBNames ROB::getName()
     return name;
 }
 
+int ROB::getCommitLatency ()
+{
+    return commitLatency;
+}
+
+
 void ROB::setDestination (FPRegNames dest)
 {
     destiny = dest;
@@ -99,6 +106,12 @@ void ROB::setName(ROBNames nam)
 {
     name = nam;
 }
+   
+void  ROB::setCommitLatency (int commLat)
+{
+    commitLatency = commLat;
+}
+
 
 void ROB::toPrint()
 {
