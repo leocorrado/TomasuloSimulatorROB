@@ -123,9 +123,12 @@ int main(int argc, char** argv)
     Instruction I4 = Instruction (FPRegNames::FP0, FPRegNames::FP3, 
                                   FPRegNames::FP1, OperationsEnum::DIV);
     Instruction I5 = Instruction(FPRegNames::FP1, FPRegNames::FP5,
-            FPRegNames::FP2, OperationsEnum::ADD);
+                                 FPRegNames::FP2, OperationsEnum::ADD);
     
-    vector<Instruction> instructionsVector = {I0,I1,I2,I3,I4,I5};
+    Instruction I6 = Instruction (FPRegNames::FP2, FPRegNames::FP5,
+                                  FPRegNames::FP1, OperationsEnum::SUB);
+    
+    vector<Instruction> instructionsVector = {I0,I1,I2,I3,I4,I5,I6};
     
     printInstructions (instructionsVector);
     
@@ -568,9 +571,14 @@ int commit (vector<Instruction>& instr,
                     instr [rBuff [i].getInstructionAssociated()].setCommitClock(GLOBAL_CLOCK);
                 
                 FPRegNames aux = rBuff [i].getDestination();
+                ROBNames aux2 = rBuff [i].getName();
                 for (int j = 0; j < fPRegs.size (); j++)
                 {
-                    if (fPRegs [j].getName() == aux)
+                    //que alguien justo en el mismo clock haya hecho un issue
+                    //con destino de el mismo FPReg, entonces el commit "no
+                    //hace nada", solo libera el ROB correspondiente
+                    
+                    if (fPRegs [j].getTag() == aux2)
                     {
                         fPRegs [j].setBusy(false);
                         fPRegs [j].setValue(rBuff [i].getResult());

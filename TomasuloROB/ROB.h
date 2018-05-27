@@ -32,12 +32,14 @@ public:
     bool isBusy ();
     int getInstructionAssociated ();
     ROBNames getName();
+    int getCommitLatency ();
     void setDestination (FPRegNames dest);
     void setResult (float resul);
     void setDone (bool don);
     void setBusy (bool bus);
     void setInstructionAssociated (int instr);
     void setName (ROBNames nam);
+    void setCommitLatency (int commLat);
     void toPrint ();
     
 private:
@@ -47,6 +49,7 @@ private:
     float result;
     bool done;
     bool busy;
+    int commitLatency;
     
 };
 

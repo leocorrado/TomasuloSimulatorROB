@@ -7,16 +7,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/ROB.h</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/TagsReprise.h</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/ROB.cpp</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/ReservationStation.h</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/Instruction.h</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/main.cpp</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/FPointRegister.h</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/FPointRegister.cpp</file>
+            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/CommonDataBus.cpp</file>
             <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/ReservationStation.cpp</file>
-            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/Instruction.cpp</file>
+            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/main.cpp</file>
+            <file>file:/home/leo/NetBeansProjects/TomasuloSimulatorROB/TomasuloROB/ROB.cpp</file>
         </group>
     </open-files>
 </project-private>
