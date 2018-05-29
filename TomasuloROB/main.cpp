@@ -253,7 +253,6 @@ int issue (vector<Instruction>& instr,
     int indexToReser = 0;
     
     
-    //IMPORTANTE SACAR LA BANDERA FINISH
     //Ya se hizo issue de todas las instrucciones del vector 
     if (instructionsIssued >= instr.size ()) 
         return 0;
